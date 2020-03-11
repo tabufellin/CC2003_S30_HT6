@@ -1,3 +1,6 @@
+import CC2003_S30_HT6.MapFactory;
+import CC2003_S30_HT6.PlayerDeck;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
@@ -23,6 +26,8 @@ public class Main {
         Map<String, String> implementedMap = myMap.getMap(chosenMap);
         System.out.println();
 
+        long inicio = System.nanoTime();
+
         // Reads from cards_desc.txt
         try {
             BufferedReader reader = new BufferedReader(new FileReader("cards_desc.txt"));
@@ -39,6 +44,11 @@ public class Main {
             System.err.println("There was an error while converting the file to a map");
         }
 
+        long fin = System.nanoTime();
+
+        double dif =(double) (fin - inicio) * 1.0e-9;
+        System.out.println(dif);
+
         while (!userSelection.equals("0")) {
             System.out.println("-----------------------------------------------------------------------------------------");
             System.out.println("Seleccione la opcion que desea realizar");
@@ -53,6 +63,7 @@ public class Main {
             System.out.print(">> ");
             userSelection = userInput.nextLine();
             switch (userSelection) {
+
                 case "1":
 
                     System.out.println("Ingrese la carta para agregar a la coleccion");
@@ -101,50 +112,15 @@ public class Main {
                     }
                     break;
 
-                case "4":
-                    duplicatedCollection = (ArrayList<String>)cardCollection.clone();
-                    ArrayList<String> cardTypes = new ArrayList<>();
-                    ArrayList<Integer> indexArray = new ArrayList<>();
+                case "4": {
+                    PlayerDeck p = new PlayerDeck();
+                    String[] tiposCartas = {"Monstruo","Hechizo", "Trampa" };
+                    p.getForCard(cardCollection,implementedMap, tiposCartas);
 
-                    for(int i = 0; i < duplicatedCollection.size(); i ++) {
-                        cardTypes.add(implementedMap.get(duplicatedCollection.get(i)));     // Gets the value of each
-                    }
+                }
+                break;
 
-                    for(int i = 0; i < cardCollection.size(); i++) {
-                        String type = cardTypes.get(i);
-                        if(!type.equals("0")) {
-                            for(int j = 0; j < cardCollection.size(); j++) {
-
-                                int cardIndex = cardTypes.indexOf(type);
-                                if(cardIndex > 0) {
-                                    indexArray.add(cardIndex);
-                                    cardTypes.remove(cardIndex);
-                                    cardTypes.add("0");
-                                }
-
-                            }
-                            System.out.println("Cartas de tipo " + type);
-
-                            for(int j = 0; j < indexArray.size(); j++) {
-                                for(int k = 0; k < cardCollection.size(); k ++) {
-
-                                    String current = duplicatedCollection.get(0);
-                                    if(!current.equals("0")) {
-                                        int cardNumber = Collections.frequency(duplicatedCollection,current);
-                                        duplicatedCollection.removeAll(Arrays.asList(current));
-                                        for(int m = 0; m < cardNumber; m++){
-                                            duplicatedCollection.add("0");
-                                        }
-                                        System.out.println(current + " cantidad: " + cardNumber);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    break;
-
-                case "5":
+                case "5": {
                     System.out.println("Nombre y tipo de todas las cartas existentes: ");
                     System.out.println();
                     Iterator<String> valueIterator = implementedMap.values().iterator();
@@ -153,16 +129,26 @@ public class Main {
                     while (valueIterator.hasNext()) {
                         System.out.println(keyIterator.next() + " Type: " + valueIterator.next());
                     }
-                    break;
+                }
+                break;
 
-                case "6":
-                    break;
+                case "6":{
+                    PlayerDeck d = new PlayerDeck();
+                    String[] tiposCartas = {"Monstruo","Hechizo", "Trampa" };
+                    d.getCardByTypePrinter("Monstruo", implementedMap);
+                    for (String tiposCarta : tiposCartas) {
+                        int cuantas = d.getCardByTypePrinter(tiposCarta, implementedMap);
+                        System.out.println("La cantidad de cartas de tipo " + tiposCarta + ": " + cuantas);
+                    }
+                }
+
+                break;
 
             }
 
 
         }
         // implementedMap.size();
-        System.out.println(Arrays.toString(implementedMap.entrySet().toArray()));
+        //System.out.println(Arrays.toString(implementedMap.entrySet().toArray()));
     }
 }
